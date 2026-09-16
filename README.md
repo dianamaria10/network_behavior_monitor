@@ -1,35 +1,35 @@
 # Network Behavior Monitor
 
-Modul open-source pentru monitorizarea și analiza comportamentală a traficului într-o rețea locală, dezvoltat în cadrul unei lucrări de licență.
+Open-source module for monitoring and behavioral analysis of network traffic in a local network, developed as part of a bachelor's thesis.
 
-Aplicația realizează un flux complet de monitorizare: captează metadatele traficului, le stochează în SQLite, construiește indicatori comportamentali pe ferestre temporale, aplică reguli explicabile de detecție și afișează rezultatele într-un dashboard Streamlit. Arhitectura include și suport opțional pentru Isolation Forest.
+The application implements a complete monitoring workflow: it captures traffic metadata, stores it in SQLite, builds behavioral indicators over time windows, applies explainable detection rules, and displays the results in a Streamlit dashboard. The architecture also includes optional support for Isolation Forest.
 
-> **Scop:** laborator și cercetare academică. Testele de trafic trebuie efectuate numai în rețele izolate și asupra sistemelor pentru care există autorizație.
+> **Purpose:** laboratory and academic research. Traffic tests must be performed only in isolated networks and on systems for which authorization has been obtained.
 
-## Funcționalități
+## Features
 
-- captură de metadate ale pachetelor cu **Scapy**;
-- stocare în **SQLite**;
-- agregare pe ferestre temporale și feature engineering cu **Pandas/NumPy**;
-- detecție bazată pe reguli explicabile:
+- packet metadata capture with **Scapy**;
+- storage in **SQLite**;
+- time-window aggregation and feature engineering with **Pandas/NumPy**;
+- explainable rule-based detection:
   - `PORT_SCAN`;
   - `SYN_ANOMALY`;
   - `ICMP_SPIKE`;
   - `PACKET_RATE`;
   - `BYTE_RATE`;
   - `HOST_SCAN`;
-- suport opțional pentru **Isolation Forest** prin `scikit-learn`;
-- dashboard interactiv cu **Streamlit + Plotly**;
-- notificări **Telegram** opționale;
-- generator de date sintetice pentru demo, fără captură live și fără privilegii root.
+- optional **Isolation Forest** support through `scikit-learn`;
+- interactive dashboard with **Streamlit + Plotly**;
+- optional **Telegram** notifications;
+- synthetic data generator for demonstrations, without live capture and without root privileges.
 
-## Arhitectură
+## Architecture
 
 ```text
-Trafic LAN
+LAN Traffic
     │
     ▼
-Scapy – captură metadate
+Scapy – metadata capture
     │
     ▼
 SQLite / packets
@@ -43,39 +43,39 @@ SQLite / features
     │
     ▼
 Detector
- ┌───────────────┬────────────────────┐
- │ Reguli        │ Isolation Forest   │
- │ explicabile   │ opțional           │
- └───────────────┴────────────────────┘
+ ┌───────────────────┬────────────────────┐
+ │ Explainable rules │ Isolation Forest   │
+ │                   │ optional           │
+ └───────────────────┴────────────────────┘
     │
     ▼
 SQLite / alerts
     │
-    ├──────────────► Telegram (opțional)
+    ├──────────────► Telegram (optional)
     │
     ▼
 Streamlit + Plotly
 ```
 
-Dashboard-ul este componenta de vizualizare: citește datele din SQLite și nu înlocuiește modulele de captură sau detecție.
+The dashboard is the visualization component: it reads data from SQLite and does not replace the capture or detection modules.
 
-## Tehnologii
+## Technologies
 
-| Tehnologie | Rol în proiect |
+| Technology | Role in the project |
 |---|---|
-| Python | limbajul principal |
-| Scapy | captură și parsare a metadatelor de trafic |
-| SQLite | stocarea pachetelor, features și alertelor |
-| Pandas | agregare și prelucrare a datelor |
-| NumPy | operații numerice |
+| Python | main programming language |
+| Scapy | traffic metadata capture and parsing |
+| SQLite | storage for packets, features, and alerts |
+| Pandas | data aggregation and processing |
+| NumPy | numerical operations |
 | scikit-learn | Isolation Forest |
-| joblib | salvarea/încărcarea modelului ML |
+| joblib | saving/loading the ML model |
 | Streamlit | dashboard |
-| Plotly | grafice interactive |
-| python-dotenv | configurare prin `.env` |
-| requests | notificări Telegram |
+| Plotly | interactive charts |
+| python-dotenv | `.env` configuration |
+| requests | Telegram notifications |
 
-## Structura proiectului
+## Project Structure
 
 ```text
 network_behavior_monitor/
@@ -108,9 +108,9 @@ network_behavior_monitor/
 └── README.md
 ```
 
-## Instalare
+## Installation
 
-Pe Ubuntu/Debian:
+On Ubuntu/Debian:
 
 ```bash
 sudo apt update
@@ -120,17 +120,17 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Pentru configurare:
+For configuration:
 
 ```bash
 cp .env.example .env
 ```
 
-Fișierul `.env` este ignorat de Git și nu trebuie publicat.
+The `.env` file is ignored by Git and must not be published.
 
-## Demo fără captură live
+## Demo Without Live Capture
 
-Pentru a testa dashboard-ul fără acces root:
+To test the dashboard without root access:
 
 ```bash
 source .venv/bin/activate
@@ -138,33 +138,33 @@ python scripts/generate_demo_data.py --reset
 streamlit run dashboard/app.py
 ```
 
-Generatorul creează trafic sintetic și scenarii controlate, apoi populează SQLite și rulează detecția bazată pe reguli.
+The generator creates synthetic traffic and controlled scenarios, then populates SQLite and runs rule-based detection.
 
-## Captură live în laborator
+## Live Capture in a Laboratory
 
-Identifică mai întâi interfața de rețea:
+First identify the network interface:
 
 ```bash
 ip a
 ```
 
-Apoi pornește captura. Exemplu:
+Then start the capture. Example:
 
 ```bash
 source .venv/bin/activate
 sudo .venv/bin/python run_capture.py --interface ens33 --filter "ip" --db data/traffic_monitor.db
 ```
 
-`ens33` este doar un exemplu; folosește interfața disponibilă pe sistemul tău.
+`ens33` is only an example; use the interface available on your system.
 
-Într-un al doilea terminal pornește analyzer-ul:
+In a second terminal, start the analyzer:
 
 ```bash
 source .venv/bin/activate
 python3 run_analyzer.py --window 10 --interval 10 --db data/traffic_monitor.db
 ```
 
-Într-un al treilea terminal:
+In a third terminal:
 
 ```bash
 source .venv/bin/activate
@@ -172,44 +172,44 @@ export PYTHONPATH=$PWD
 streamlit run dashboard/app.py
 ```
 
-## Detecție
+## Detection
 
-În implementarea actuală, rezultatele experimentelor principale sunt generate prin reguli interpretabile.
+In the current implementation, the main experimental results are generated using explainable rules.
 
-Exemple:
+Examples:
 
-- `PORT_SCAN` – număr mare de porturi destinație distincte;
-- `SYN_ANOMALY` – raport SYN ridicat;
-- `ICMP_SPIKE` – pondere ICMP ridicată;
-- `PACKET_RATE` – rată mare de pachete;
-- `BYTE_RATE` – volum mare de trafic;
-- `HOST_SCAN` – număr mare de gazde destinație distincte.
+- `PORT_SCAN` – large number of distinct destination ports;
+- `SYN_ANOMALY` – high SYN ratio;
+- `ICMP_SPIKE` – high ICMP proportion;
+- `PACKET_RATE` – high packet rate;
+- `BYTE_RATE` – high traffic volume;
+- `HOST_SCAN` – large number of distinct destination hosts.
 
-Pragurile sunt configurabile prin `.env`.
+Thresholds are configurable through `.env`.
 
 ## Isolation Forest
 
-Proiectul include o componentă opțională de detecție bazată pe Isolation Forest. Modelul este antrenat pe vectorii de caracteristici din tabela `features`.
+The project includes an optional Isolation Forest-based detection component. The model is trained on feature vectors stored in the `features` table.
 
-Antrenare:
+Training:
 
 ```bash
 python scripts/train_baseline.py --db data/traffic_monitor.db
 ```
 
-Modelul este salvat în:
+The model is saved to:
 
 ```text
 models/isolation_forest.pkl
 ```
 
-Fișierul modelului nu este inclus în repository; poate fi generat local după colectarea datelor.
+The model file is not included in the repository; it can be generated locally after collecting data.
 
-> Isolation Forest este o extensie a arhitecturii și nu reprezintă mecanismul principal al rezultatelor experimentale prezentate în lucrare.
+> Isolation Forest is an extension of the architecture and is not the main mechanism behind the experimental results presented in the thesis.
 
-## Configurare
+## Configuration
 
-Exemple de variabile disponibile în `.env.example`:
+Examples of variables available in `.env.example`:
 
 ```text
 NBM_DB_PATH
@@ -228,65 +228,65 @@ TELEGRAM_BOT_TOKEN
 TELEGRAM_CHAT_ID
 ```
 
-Token-ul Telegram, dacă este folosit, trebuie păstrat numai în `.env`.
+The Telegram token, if used, must be kept only in `.env`.
 
-## Baza de date
+## Database
 
-SQLite conține trei categorii principale de date:
+SQLite contains three main categories of data:
 
-- `packets` – metadatele pachetelor capturate;
-- `features` – indicatorii calculați pe ferestre temporale;
-- `alerts` – evenimentele generate de detector.
+- `packets` – metadata of captured packets;
+- `features` – indicators calculated over time windows;
+- `alerts` – events generated by the detector.
 
-Nu este necesară o bază de date externă pentru rularea locală.
+No external database is required for local execution.
 
-## Limitări
+## Limitations
 
-- pragurile implicite sunt fixe și necesită calibrare pentru alte rețele;
-- pot apărea false positive în cazul traficului legitim neobișnuit;
-- experimentele din lucrare au fost realizate într-un mediu virtualizat;
-- comportamentul real al unei rețele poate fi mai complex decât scenariile controlate;
-- componenta ML necesită date de antrenare adecvate pentru mediul monitorizat;
-- SQLite este potrivit pentru un prototip local, nu pentru un sistem distribuit de monitorizare la scară mare.
+- default thresholds are fixed and require calibration for other networks;
+- false positives may occur in the case of unusual legitimate traffic;
+- the experiments in the thesis were performed in a virtualized environment;
+- real network behavior can be more complex than the controlled scenarios;
+- the ML component requires suitable training data for the monitored environment;
+- SQLite is suitable for a local prototype, not for a large-scale distributed monitoring system.
 
-## Direcții viitoare
+## Future Directions
 
-- calibrarea automată a pragurilor pe baza traficului de bază;
-- reducerea și corelarea alertelor duplicate;
-- evaluarea sistematică a Isolation Forest pe seturi de date mai variate;
-- compararea regulilor cu metode ML;
-- testare într-o rețea reală autorizată;
-- extinderea dashboard-ului cu filtre și corelări mai avansate;
-- posibilă migrare către o bază de date mai potrivită pentru volume mari.
+- automatic threshold calibration based on baseline traffic;
+- reduction and correlation of duplicate alerts;
+- systematic evaluation of Isolation Forest on more diverse datasets;
+- comparison of rule-based detection with ML methods;
+- testing in a real authorized network;
+- extending the dashboard with more advanced filters and correlations;
+- possible migration to a database better suited for large data volumes.
 
-## Mediu de laborator
+## Laboratory Environment
 
-Pentru reproducerea experimentelor este recomandată o rețea virtualizată izolată, de exemplu:
+For reproducing the experiments, an isolated virtualized network is recommended, for example:
 
 ```text
 Ubuntu Monitor  ←→  Kali Linux
 ```
 
-Consultați `docs/SAFE_LAB.md` pentru recomandări privind izolarea mediului.
+See `docs/SAFE_LAB.md` for recommendations on isolating the environment.
 
-## Contribuție proprie
+## Own Contribution
 
-Contribuția proiectului constă în integrarea într-un singur flux modular a:
+The project contribution consists of integrating the following components into a single modular workflow:
 
-1. capturii de metadate;
-2. agregării comportamentale;
-3. regulilor explicabile de detecție;
-4. stocării și auditării rezultatelor;
-5. dashboard-ului de monitorizare;
-6. alertării opționale;
-7. unei extensii ML prin Isolation Forest.
+1. metadata capture;
+2. behavioral aggregation;
+3. explainable detection rules;
+4. result storage and auditing;
+5. monitoring dashboard;
+6. optional alerting;
+7. an ML extension through Isolation Forest.
 
-Proiectul nu propune un algoritm nou de detecție; accentul este pus pe integrare, modularitate, explicabilitate și posibilitatea de extindere.
+The project does not propose a new detection algorithm; the emphasis is on integration, modularity, explainability, and extensibility.
 
-## Licență
+## License
 
-Proiectul este distribuit sub licența MIT. Consultați fișierul `LICENSE`.
+The project is distributed under the MIT License. See the `LICENSE` file.
 
-## Siguranță și utilizare responsabilă
+## Safety and Responsible Use
 
-Folosește instrumentele de captură și testare numai în rețele și sisteme pentru care ai permisiune explicită. Nu executa scanări sau trafic de test asupra unor sisteme externe, a rețelelor instituției sau a Internetului fără autorizare.
+Use packet capture and testing tools only on networks and systems for which you have explicit permission. Do not perform scans or generate test traffic against external systems, institutional networks, or the Internet without authorization.
