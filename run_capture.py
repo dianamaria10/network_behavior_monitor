@@ -1,0 +1,4 @@
+from network_monitor.packet_capture import main
+
+if __name__ == "__main__":
+    main()

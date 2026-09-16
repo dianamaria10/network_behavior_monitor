@@ -1,0 +1,15 @@
+\section{Mediul experimental}
+
+Pentru validarea sistemului a fost utilizat un mediu controlat bazat pe mașini virtuale. Infrastructura experimentală a fost realizată în VMware Workstation și a inclus o mașină Ubuntu cu rol de monitor, precum și o mașină Kali Linux utilizată pentru generarea traficului controlat. Această separare permite observarea comportamentului sistemului în condiții apropiate de un laborator de securitate, fără afectarea unei infrastructuri reale.
+
+\section{Componenta de captură a traficului}
+
+Componenta de captură utilizează biblioteca Scapy pentru interceptarea pachetelor de rețea și extragerea metadatelor relevante. Sistemul nu stochează conținutul efectiv al pachetelor, ci doar informații precum adresa IP sursă, adresa IP destinație, protocolul, porturile, dimensiunea pachetului și marcajul temporal. Această decizie reduce riscul de prelucrare a unor date sensibile și păstrează accentul pe analiza comportamentală.
+
+\section{Extragerea caracteristicilor}
+
+Pachetele capturate sunt agregate pe ferestre de timp și transformate în vectori de caracteristici. Printre indicatorii utilizați se numără numărul de pachete pe secundă, dimensiunea medie a pachetelor, numărul de porturi destinație distincte, raportul pachetelor SYN și distribuția protocoalelor. Aceste caracteristici au fost alese deoarece descriu comportamentul traficului și pot evidenția activități precum scanarea porturilor sau traficul volumetric.
+
+\section{Mecanismul de detecție}
+
+Detecția anomaliilor este realizată prin combinarea unor reguli statistice simple cu un model Isolation Forest. Regulile sunt utilizate pentru identificarea unor situații evidente, precum un număr ridicat de porturi destinație într-un interval scurt, în timp ce modelul nesupravegheat permite identificarea unor deviații mai subtile față de profilul normal al traficului.
